@@ -25,9 +25,10 @@ jobs:
           python3 - <<'PY'
           import json, os, re, subprocess, zipfile
 
-          STEMS = {"thumb", "cthumb"}
-          EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
-          LIMIT = 3 * 1024 * 1024
+          STEMS = {"thumb": 0, "cthumb": 1}
+          EXT_RANK = {".gif": 0, ".png": 1, ".webp": 2, ".jpg": 3, ".jpeg": 3}
+          LIMIT = 5 * 1024 * 1024
+          RULE = 2
 
           repo = os.environ["GITHUB_REPOSITORY"]
           os.makedirs("thumbs", exist_ok=True)
@@ -55,7 +56,7 @@ jobs:
                       continue
                   seen.add(name)
                   old = idx.get(name)
-                  if old and old.get("size") == a["size"]:
+                  if old and old.get("size") == a["size"] and old.get("rule") == RULE:
                       continue
 
                   subprocess.run(
@@ -73,9 +74,14 @@ jobs:
                               if info.is_dir():
                                   continue
                               stem, ext = os.path.splitext(os.path.basename(info.filename))
-                              if stem.lower() in STEMS and ext.lower() in EXTS and info.file_size <= LIMIT:
+                              if stem.lower() in STEMS and ext.lower() in EXT_RANK and info.file_size <= LIMIT:
                                   cands.append(info)
-                          cands.sort(key=lambda i: (i.filename.count("/"), i.filename))
+                          cands.sort(key=lambda i: (
+                              STEMS[os.path.splitext(os.path.basename(i.filename))[0].lower()],
+                              EXT_RANK[os.path.splitext(i.filename)[1].lower()],
+                              i.filename.count("/"),
+                              i.filename
+                          ))
                           if cands:
                               pick = cands[0]
                               ext = os.path.splitext(pick.filename)[1].lower()
@@ -86,7 +92,11 @@ jobs:
                   except zipfile.BadZipFile:
                       found = None
 
-                  idx[name] = {"file": found, "size": a["size"]}
+                  if old and old.get("file") and old.get("file") != found:
+                      old_path = os.path.join("thumbs", old["file"])
+                      if os.path.exists(old_path):
+                          os.remove(old_path)
+                  idx[name] = {"file": found, "size": a["size"], "rule": RULE}
                   os.remove(path)
 
           for name in list(idx):
