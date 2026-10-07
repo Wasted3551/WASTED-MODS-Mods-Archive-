@@ -68,7 +68,7 @@ h1{
 .lead{margin:0;max-width:46ch;color:var(--muted);font-size:18px}
 .stats{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
+  grid-template-columns:repeat(auto-fit,minmax(0,1fr));
   margin:0 0 48px;
   border-top:1px solid var(--line);
   border-bottom:1px solid var(--line);
@@ -269,7 +269,8 @@ const CONFIG = {
     ru: "Моды для People Playground. Выбери файл и скачай."
   },
   cacheMinutes: 3,
-  searchFrom: 6
+  searchFrom: 6,
+  goatcounter: ""
 };
 
 const I18N = {
@@ -335,7 +336,7 @@ const $ = id => document.getElementById(id);
 const SLUG = CONFIG.repo.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const NS = "dl-" + SLUG;
 
-const state = { status: "loading", error: null, releases: [], views: null, query: "" };
+const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: false, query: "" };
 let lang = detectLang();
 
 function detectLang(){
@@ -427,9 +428,6 @@ function buildFile(a){
   btn.href = a.browser_download_url;
   btn.rel = "noopener";
   btn.addEventListener("click", () => {
-    a.download_count += 1;
-    num.textContent = nf(a.download_count);
-    renderStats();
     btn.textContent = t().downloading;
     btn.classList.add("done");
     setTimeout(() => {
@@ -517,6 +515,7 @@ function renderStats(){
     $("s-downloads").textContent = "–";
     $("s-files").textContent = "–";
   }
+  $("s-views").parentElement.hidden = state.viewsFailed;
   $("s-views").textContent = state.views === null ? "–" : nf(state.views);
 }
 
@@ -638,13 +637,24 @@ async function loadViews(){
     const r = await fetch(url);
     if (!r.ok) throw new Error();
     const d = await r.json();
-    if (typeof d.count !== "number") throw new Error();
+    const n = [d.count, d.value, d.data && d.data.up_count].find(v => typeof v === "number");
+    if (n === undefined) throw new Error();
     if (s) s.setItem("viewed", "1");
-    state.views = d.count;
+    state.views = n;
+    state.viewsFailed = false;
   } catch (e) {
     state.views = null;
+    state.viewsFailed = true;
   }
   renderStats();
+}
+
+if (CONFIG.goatcounter) {
+  const gc = document.createElement("script");
+  gc.async = true;
+  gc.src = "https://gc.zgo.at/count.js";
+  gc.dataset.goatcounter = "https://" + CONFIG.goatcounter + ".goatcounter.com/count";
+  document.head.append(gc);
 }
 
 render();
