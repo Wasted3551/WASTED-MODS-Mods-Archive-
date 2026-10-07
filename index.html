@@ -268,7 +268,7 @@ const CONFIG = {
     en: "Mods for People Playground. Pick a file and download it.",
     ru: "Моды для People Playground. Выбери файл и скачай."
   },
-  cacheMinutes: 3,
+  cacheMinutes: 1,
   searchFrom: 6,
   goatcounter: ""
 };
@@ -336,7 +336,7 @@ const $ = id => document.getElementById(id);
 const SLUG = CONFIG.repo.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const NS = "dl-" + SLUG;
 
-const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: false, query: "" };
+const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: true, query: "" };
 let lang = detectLang();
 
 function detectLang(){
