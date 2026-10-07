@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mods for People Playground</title>
+<meta name="description" content="Download mods for People Playground">
+<meta property="og:title" content="Mods for People Playground">
+<meta property="og:description" content="Mod archives, download counter, all versions.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=Silkscreen:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#1d222b;
+  --muted:#5b6676;
+  --paper:#dfe5ea;
+  --panel:#f5f7f9;
+  --line:#b9c3cd;
+  --accent:#d9402f;
+  --accent-ink:#ffffff;
+  --ok:#2f7d4f;
+}
+@media (prefers-color-scheme:dark){
+  :root{
+    --ink:#e6ebf0;
+    --muted:#93a0b0;
+    --paper:#161a21;
+    --panel:#1f252e;
+    --line:#333c49;
+    --accent:#ee5a48;
+    --accent-ink:#1a0d0b;
+    --ok:#5fc08a;
+  }
+}
+*{box-sizing:border-box}
+html{background:var(--paper)}
+body{
+  margin:0;
+  font:16px/1.55 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
+  color:var(--ink);
+  background:var(--paper);
+  padding:0 20px 80px;
+}
+.wrap{max-width:820px;margin:0 auto}
+.bar{display:flex;justify-content:flex-end;padding-top:20px}
+.lang{display:inline-flex;border:2px solid var(--ink);background:var(--panel)}
+.lang button{
+  appearance:none;
+  border:0;
+  margin:0;
+  padding:7px 14px;
+  background:transparent;
+  color:var(--ink);
+  font:700 13px/1 "Silkscreen","Courier New",monospace;
+  cursor:pointer;
+}
+.lang button + button{border-left:2px solid var(--ink)}
+.lang button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.lang button:focus-visible{outline:3px solid var(--accent);outline-offset:-3px}
+header{padding:44px 0 36px}
+h1{
+  font:700 clamp(30px,7vw,54px)/1.05 "Silkscreen","Courier New",monospace;
+  letter-spacing:-.01em;
+  margin:0 0 18px;
+}
+.lead{margin:0;max-width:56ch;color:var(--muted);font-size:17px}
+.stats{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  margin:32px 0 44px;
+  border:2px solid var(--ink);
+  background:var(--panel);
+}
+.stat{padding:16px 18px;border-right:2px solid var(--ink)}
+.stat:last-child{border-right:0}
+.stat b{
+  display:block;
+  font:700 clamp(24px,5vw,34px)/1.1 "Silkscreen","Courier New",monospace;
+  font-variant-numeric:tabular-nums;
+}
+.stat span{color:var(--muted);font-size:14px}
+.release{
+  border:2px solid var(--ink);
+  background:var(--panel);
+  margin-bottom:22px;
+}
+.release-head{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:baseline;
+  gap:6px 14px;
+  padding:16px 18px 0;
+}
+.release-head h2{margin:0;font:700 22px/1.2 "Silkscreen","Courier New",monospace}
+.release-head time{color:var(--muted);font-size:14px}
+.badge{
+  font-size:13px;
+  font-weight:600;
+  padding:1px 8px;
+  background:var(--accent);
+  color:var(--accent-ink);
+}
+.notes{
+  margin:10px 18px 0;
+  white-space:pre-wrap;
+  color:var(--muted);
+  font-size:15px;
+  max-width:68ch;
+}
+.files{margin:16px 0 0;padding:0;list-style:none;border-top:1px solid var(--line)}
+.file{
+  display:grid;
+  grid-template-columns:1fr auto auto;
+  align-items:center;
+  gap:6px 18px;
+  padding:14px 18px;
+  border-bottom:1px solid var(--line);
+}
+.file:last-child{border-bottom:0}
+.fname{font-weight:600;word-break:break-word}
+.fmeta{display:block;color:var(--muted);font-size:13px;font-weight:400}
+.count{
+  text-align:right;
+  font-variant-numeric:tabular-nums;
+  font-size:14px;
+  color:var(--muted);
+  white-space:nowrap;
+}
+.count b{color:var(--ink);font-size:16px}
+.btn{
+  display:inline-block;
+  min-width:128px;
+  text-align:center;
+  padding:9px 18px;
+  background:var(--accent);
+  color:var(--accent-ink);
+  font:600 15px/1 "IBM Plex Sans",system-ui,sans-serif;
+  text-decoration:none;
+  border:2px solid var(--ink);
+  box-shadow:3px 3px 0 var(--ink);
+  transition:transform .08s,box-shadow .08s;
+}
+.btn:hover{transform:translate(1px,1px);box-shadow:2px 2px 0 var(--ink)}
+.btn:active{transform:translate(3px,3px);box-shadow:0 0 0 var(--ink)}
+.btn:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.btn.done{background:var(--ok);color:#fff}
+.state{
+  border:2px dashed var(--line);
+  padding:28px 20px;
+  color:var(--muted);
+}
+.state strong{display:block;color:var(--ink);margin-bottom:4px}
+.skeleton{height:150px;border:2px solid var(--line);background:var(--panel);opacity:.6}
+@media (max-width:560px){
+  header{padding-top:32px}
+  .file{grid-template-columns:1fr auto}
+  .file .count{grid-column:1;text-align:left;order:3}
+  .file .btn{grid-column:2;grid-row:1;min-width:0}
+  .stat{padding:12px}
+}
+@media (prefers-reduced-motion:reduce){.btn{transition:none}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="bar">
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="ru" aria-pressed="false">RU</button>
+      <button type="button" data-lang="en" aria-pressed="false">ENG</button>
+    </div>
+  </div>
+
+  <header>
+    <h1 id="title"></h1>
+    <p class="lead" id="lead"></p>
+  </header>
+
+  <section class="stats">
+    <div class="stat"><b id="s-downloads">–</b><span id="l-downloads"></span></div>
+    <div class="stat"><b id="s-views">–</b><span id="l-views"></span></div>
+    <div class="stat"><b id="s-files">–</b><span id="l-files"></span></div>
+  </section>
+
+  <main id="list" aria-live="polite">
+    <div class="skeleton"></div>
+  </main>
+</div>
+
+<script>
+const CONFIG = {
+  repo: "WASTED/wasted-mods",
+  title: {
+    en: "Mods for People Playground",
+    ru: "Моды для People Playground"
+  },
+  description: {
+    en: "Archives with mods. Download the latest version or any of the previous ones.",
+    ru: "Архивы с модами. Скачивай последнюю версию или любую из предыдущих."
+  },
+  cacheMinutes: 3
+};
+
+const I18N = {
+  en: {
+    locale: "en-US",
+    downloads: "downloads",
+    views: "views",
+    files: "files",
+    latest: "latest",
+    download: "Download",
+    downloading: "Downloading",
+    countLabel: "Downloads",
+    noFiles: "No files in this release",
+    units: { kb: "KB", mb: "MB", gb: "GB" },
+    emptyTitle: "No releases yet",
+    emptyText: "Create a release in the repository and attach the archives.",
+    errRepoTitle: "Repository not found",
+    errRepoText: "Check the repo value in CONFIG and make sure the repository is public.",
+    errLimitTitle: "Too many requests",
+    errLimitText: "GitHub has temporarily limited requests. Refresh the page in a few minutes.",
+    errHttpTitle: "Could not load files",
+    errHttpText: "Check your connection and refresh the page."
+  },
+  ru: {
+    locale: "ru-RU",
+    downloads: "скачиваний",
+    views: "просмотров",
+    files: "файлов",
+    latest: "последняя",
+    download: "Скачать",
+    downloading: "Скачивается",
+    countLabel: "Скачиваний",
+    noFiles: "В этом релизе нет файлов",
+    units: { kb: "КБ", mb: "МБ", gb: "ГБ" },
+    emptyTitle: "Релизов пока нет",
+    emptyText: "Создай релиз в репозитории и приложи к нему архивы.",
+    errRepoTitle: "Репозиторий не найден",
+    errRepoText: "Проверь значение repo в CONFIG и что репозиторий публичный.",
+    errLimitTitle: "Слишком много запросов",
+    errLimitText: "GitHub временно ограничил запросы. Обнови страницу через несколько минут.",
+    errHttpTitle: "Не удалось загрузить файлы",
+    errHttpText: "Проверь соединение и обнови страницу."
+  }
+};
+
+const $ = id => document.getElementById(id);
+const NS = "dl-" + CONFIG.repo.toLowerCase().replace(/[^a-z0-9]+/g, "-");
+
+const state = { status: "loading", error: null, releases: [], views: null };
+let lang = detectLang();
+
+function detectLang(){
+  try {
+    const saved = window.localStorage.getItem("lang");
+    if (saved === "ru" || saved === "en") return saved;
+  } catch (e) {}
+  const nav = (navigator.language || "en").toLowerCase();
+  return nav.startsWith("ru") ? "ru" : "en";
+}
+
+function saveLang(){
+  try { window.localStorage.setItem("lang", lang); } catch (e) {}
+}
+
+function session(){
+  try { return window.sessionStorage; } catch (e) { return null; }
+}
+
+function t(){ return I18N[lang]; }
+function nf(n){ return new Intl.NumberFormat(t().locale).format(n); }
+
+function fmtSize(bytes){
+  const u = t().units;
+  if (bytes >= 1073741824) return (bytes / 1073741824).toFixed(2) + " " + u.gb;
+  if (bytes >= 1048576) return (bytes / 1048576).toFixed(1) + " " + u.mb;
+  return Math.max(1, Math.round(bytes / 1024)) + " " + u.kb;
+}
+
+function fmtDate(iso){
+  return new Date(iso).toLocaleDateString(t().locale, { day: "numeric", month: "long", year: "numeric" });
+}
+
+function el(tag, cls, text){
+  const n = document.createElement(tag);
+  if (cls) n.className = cls;
+  if (text !== undefined) n.textContent = text;
+  return n;
+}
+
+function stateBox(title, text){
+  const box = el("div", "state");
+  box.append(el("strong", "", title), document.createTextNode(text));
+  return box;
+}
+
+function renderRelease(rel, isLatest){
+  const s = t();
+  const card = el("article", "release");
+  const head = el("div", "release-head");
+  head.append(el("h2", "", rel.name || rel.tag_name));
+  if (isLatest) head.append(el("span", "badge", s.latest));
+  head.append(el("time", "", fmtDate(rel.published_at || rel.created_at)));
+  card.append(head);
+
+  const body = (rel.body || "").trim();
+  if (body) card.append(el("p", "notes", body));
+
+  const ul = el("ul", "files");
+  const assets = rel.assets || [];
+  if (!assets.length) {
+    const li = el("li", "file");
+    li.append(el("span", "fname", s.noFiles));
+    ul.append(li);
+  }
+  assets.forEach(a => {
+    const li = el("li", "file");
+    const name = el("span", "fname", a.name);
+    name.append(el("span", "fmeta", fmtSize(a.size)));
+
+    const count = el("span", "count");
+    const num = el("b", "", nf(a.download_count));
+    count.append(document.createTextNode(s.countLabel + ": "), num);
+
+    const btn = el("a", "btn", s.download);
+    btn.href = a.browser_download_url;
+    btn.rel = "noopener";
+    btn.addEventListener("click", () => {
+      a.download_count += 1;
+      num.textContent = nf(a.download_count);
+      renderStats();
+      btn.textContent = t().downloading;
+      btn.classList.add("done");
+      setTimeout(() => {
+        btn.textContent = t().download;
+        btn.classList.remove("done");
+      }, 2500);
+    });
+
+    li.append(name, count, btn);
+    ul.append(li);
+  });
+  card.append(ul);
+  return card;
+}
+
+function renderStats(){
+  const s = t();
+  $("l-downloads").textContent = s.downloads;
+  $("l-views").textContent = s.views;
+  $("l-files").textContent = s.files;
+
+  if (state.status === "ok") {
+    let dl = 0, files = 0;
+    state.releases.forEach(r => (r.assets || []).forEach(a => { dl += a.download_count; files += 1; }));
+    $("s-downloads").textContent = nf(dl);
+    $("s-files").textContent = nf(files);
+  } else if (state.status === "empty") {
+    $("s-downloads").textContent = "0";
+    $("s-files").textContent = "0";
+  } else {
+    $("s-downloads").textContent = "–";
+    $("s-files").textContent = "–";
+  }
+  $("s-views").textContent = state.views === null ? "–" : nf(state.views);
+}
+
+function renderList(){
+  const s = t();
+  const list = $("list");
+  list.replaceChildren();
+  if (state.status === "loading") {
+    list.append(el("div", "skeleton"));
+  } else if (state.status === "empty") {
+    list.append(stateBox(s.emptyTitle, s.emptyText));
+  } else if (state.status === "error") {
+    if (state.error === "repo") list.append(stateBox(s.errRepoTitle, s.errRepoText));
+    else if (state.error === "limit") list.append(stateBox(s.errLimitTitle, s.errLimitText));
+    else list.append(stateBox(s.errHttpTitle, s.errHttpText));
+  } else {
+    state.releases.forEach((rel, i) => list.append(renderRelease(rel, i === 0)));
+  }
+}
+
+function renderStatic(){
+  document.documentElement.lang = lang;
+  document.title = CONFIG.title[lang];
+  $("title").textContent = CONFIG.title[lang];
+  $("lead").textContent = CONFIG.description[lang];
+  document.querySelectorAll(".lang button").forEach(b => {
+    b.setAttribute("aria-pressed", String(b.dataset.lang === lang));
+  });
+}
+
+function render(){
+  renderStatic();
+  renderStats();
+  renderList();
+}
+
+document.querySelectorAll(".lang button").forEach(b => {
+  b.addEventListener("click", () => {
+    if (b.dataset.lang === lang) return;
+    lang = b.dataset.lang;
+    saveLang();
+    render();
+  });
+});
+
+async function getReleases(){
+  const key = "rel:" + CONFIG.repo;
+  const s = session();
+  if (s) {
+    const raw = s.getItem(key);
+    if (raw) {
+      const c = JSON.parse(raw);
+      if (Date.now() - c.t < CONFIG.cacheMinutes * 60000) return c.d;
+    }
+  }
+  const r = await fetch("https://api.github.com/repos/" + CONFIG.repo + "/releases?per_page=30", {
+    headers: { Accept: "application/vnd.github+json" }
+  });
+  if (r.status === 404) throw new Error("repo");
+  if (r.status === 403 || r.status === 429) throw new Error("limit");
+  if (!r.ok) throw new Error("http");
+  const data = await r.json();
+  if (s) s.setItem(key, JSON.stringify({ t: Date.now(), d: data }));
+  return data;
+}
+
+async function loadReleases(){
+  try {
+    const all = (await getReleases()).filter(r => !r.draft);
+    state.releases = all;
+    state.status = all.length ? "ok" : "empty";
+  } catch (e) {
+    state.status = "error";
+    state.error = e.message;
+  }
+  render();
+}
+
+async function loadViews(){
+  const s = session();
+  const counted = s && s.getItem("viewed");
+  const url = "https://api.counterapi.dev/v1/" + NS + "/views/" + (counted ? "" : "up");
+  try {
+    const r = await fetch(url);
+    if (!r.ok) throw new Error();
+    const d = await r.json();
+    if (typeof d.count !== "number") throw new Error();
+    if (s) s.setItem("viewed", "1");
+    state.views = d.count;
+  } catch (e) {
+    state.views = null;
+  }
+  renderStats();
+}
+
+render();
+loadReleases();
+loadViews();
+</script>
+</body>
+</html>
