@@ -1,30 +1,127 @@
 {
   "Absolute.Flash.mod.zip": {
     "file": "Absolute.Flash.mod.zip.png",
-    "size": 1852522
+    "size": 1852522,
+    "rule": 2
   },
   "Crysis.mod.zip": {
     "file": "Crysis.mod.zip.png",
-    "size": 645333
+    "size": 645333,
+    "rule": 2
   },
   "My.Hero.Playground.zip": {
     "file": "My.Hero.Playground.zip.png",
-    "size": 48377367
+    "size": 48377367,
+    "rule": 2
   },
   "Ninja.Turtles.Playground.zip": {
     "file": "Ninja.Turtles.Playground.zip.png",
-    "size": 4616256
+    "size": 4616256,
+    "rule": 2
   },
   "OPP.ADDON.zip": {
     "file": "OPP.ADDON.zip.png",
-    "size": 20371786
+    "size": 20371786,
+    "rule": 2
   },
   "sentry.zip": {
     "file": "sentry.zip.gif",
-    "size": 4716595
+    "size": 4716595,
+    "rule": 2
   },
   "The.Boys.Mod.RELEASE.zip": {
     "file": "The.Boys.Mod.RELEASE.zip.png",
-    "size": 43010166
+    "size": 43010166,
+    "rule": 2
+  },
+  "absolute.batman.mod.zip": {
+    "file": "absolute.batman.mod.zip.png",
+    "size": 748240,
+    "rule": 2
+  },
+  "absolute.superman.mod.zip": {
+    "file": "absolute.superman.mod.zip.png",
+    "size": 633901,
+    "rule": 2
+  },
+  "adam.smasher.mod.zip": {
+    "file": null,
+    "size": 5574315,
+    "rule": 2
+  },
+  "DispatchMod.zip": {
+    "file": "DispatchMod.zip.png",
+    "size": 54156136,
+    "rule": 2
+  },
+  "doflamingo.mod.zip": {
+    "file": "doflamingo.mod.zip.png",
+    "size": 12057231,
+    "rule": 2
+  },
+  "gurren-lagann-mod.zip": {
+    "file": "gurren-lagann-mod.zip.png",
+    "size": 7935709,
+    "rule": 2
+  },
+  "jiji.mod.zip": {
+    "file": "jiji.mod.zip.png",
+    "size": 5981197,
+    "rule": 2
+  },
+  "jjk.mod.zip": {
+    "file": "jjk.mod.zip.png",
+    "size": 2100673,
+    "rule": 2
+  },
+  "jojolion.mod.zip": {
+    "file": "jojolion.mod.zip.png",
+    "size": 9139233,
+    "rule": 2
+  },
+  "MBA.Steel.Ball.Run.zip": {
+    "file": null,
+    "size": 23015710,
+    "rule": 2
+  },
+  "naoya.mod.zip": {
+    "file": "naoya.mod.zip.png",
+    "size": 1460563,
+    "rule": 2
+  },
+  "okarun.mod.zip": {
+    "file": "okarun.mod.zip.png",
+    "size": 6059328,
+    "rule": 2
+  },
+  "phosphorus.mod.zip": {
+    "file": "phosphorus.mod.zip.png",
+    "size": 638531,
+    "rule": 2
+  },
+  "Polnareff.mod.zip": {
+    "file": "Polnareff.mod.zip.png",
+    "size": 6654028,
+    "rule": 2
+  },
+  "Ragna.mod.REMAKE.zip": {
+    "file": "Ragna.mod.REMAKE.zip.png",
+    "size": 3805427,
+    "rule": 2
+  },
+  "solo-leveling-mod.zip": {
+    "file": null,
+    "size": 31168678,
+    "rule": 2
+  },
+  "Steel-Ball-Run-Mod.zip": {
+    "file": null,
+    "size": 109417698,
+    "rule": 2
+  },
+  "Zucchero.mod.zip": {
+    "file": "Zucchero.mod.zip.png",
+    "size": 7022066,
+    "rule": 2
   }
 }
