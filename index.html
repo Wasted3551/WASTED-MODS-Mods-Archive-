@@ -61,9 +61,9 @@ body{
 header{padding:64px 0 40px}
 h1{
   margin:0 0 20px;
-  font:800 clamp(44px,11vw,96px)/.92 var(--display);
-  letter-spacing:-.035em;
-  text-shadow:0 0 42px rgba(124,58,237,.55);
+  font:700 clamp(26px,6.4vw,60px)/1 var(--display);
+  letter-spacing:-.02em;
+  text-shadow:0 0 30px rgba(124,58,237,.45);
 }
 .lead{margin:0;max-width:46ch;color:var(--muted);font-size:18px}
 .stats{
@@ -131,14 +131,14 @@ h1{
 .files{margin:18px 0 0;padding:0;list-style:none}
 .file{
   display:grid;
-  grid-template-columns:46px 1fr auto auto;
+  grid-template-columns:56px 1fr auto auto;
   align-items:center;
   gap:8px 16px;
   padding:14px 22px;
   border-top:1px solid var(--line);
 }
 .ext{
-  width:46px;height:46px;
+  width:56px;height:56px;
   display:grid;place-items:center;
   border-radius:9px;
   background:var(--panel-2);
@@ -146,6 +146,7 @@ h1{
   color:var(--glow);
   font:700 12px/1 var(--display);
 }
+img.ext{display:block;object-fit:cover;padding:0}
 .fname{font-weight:600;word-break:break-word;min-width:0}
 .fmeta{display:flex;flex-wrap:wrap;gap:0 14px;color:var(--muted);font-size:13px;font-weight:400}
 .count{
@@ -222,7 +223,7 @@ footer a:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
   .stat + .stat{padding-left:14px}
   .release-head{padding:18px 16px 0}
   .notes{margin:12px 16px 0}
-  .file{grid-template-columns:46px 1fr;padding:14px 16px}
+  .file{grid-template-columns:56px 1fr;padding:14px 16px}
   .file .count{grid-column:1 / -1;text-align:left;order:3}
   .file .actions{grid-column:1 / -1;order:4}
   .file .btn:not(.ghost){flex:1}
@@ -342,7 +343,7 @@ const $ = id => document.getElementById(id);
 const SLUG = CONFIG.repo.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const NS = "dl-" + SLUG;
 
-const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: true, query: "" };
+const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: true, thumbs: {}, query: "" };
 let lang = detectLang();
 
 function detectLang(){
@@ -414,10 +415,23 @@ async function copyText(text){
   }
 }
 
+function buildIcon(a){
+  const badge = el("div", "ext", extOf(a.name));
+  const info = state.thumbs[a.name];
+  if (!info || !info.file) return badge;
+  const img = el("img", "ext");
+  img.alt = "";
+  img.loading = "lazy";
+  img.decoding = "async";
+  img.src = "thumbs/" + encodeURIComponent(info.file);
+  img.addEventListener("error", () => img.replaceWith(badge));
+  return img;
+}
+
 function buildFile(a){
   const s = t();
   const li = el("li", "file");
-  li.append(el("div", "ext", extOf(a.name)));
+  li.append(buildIcon(a));
 
   const name = el("div", "fname", a.name);
   const meta = el("div", "fmeta");
@@ -664,8 +678,21 @@ if (CONFIG.goatcounter) {
 }
 
 render();
+async function loadThumbs(){
+  try {
+    const r = await fetch("thumbs/index.json", { cache: "no-cache" });
+    if (!r.ok) return;
+    const d = await r.json();
+    if (d && typeof d === "object") {
+      state.thumbs = d;
+      if (state.status === "ok") renderList();
+    }
+  } catch (e) {}
+}
+
 loadReleases();
 loadViews();
+loadThumbs();
 </script>
 </body>
 </html>
