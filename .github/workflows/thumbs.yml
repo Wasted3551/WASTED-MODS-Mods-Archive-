@@ -1,0 +1,111 @@
+name: thumbs
+
+on:
+  release:
+    types: [published, edited]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: thumbs
+  cancel-in-progress: false
+
+jobs:
+  thumbs:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Extract thumbnails from release zips
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python3 - <<'PY'
+          import json, os, re, subprocess, zipfile
+
+          STEMS = {"thumb", "cthumb"}
+          EXTS = {".png", ".jpg", ".jpeg", ".webp", ".gif"}
+          LIMIT = 3 * 1024 * 1024
+
+          repo = os.environ["GITHUB_REPOSITORY"]
+          os.makedirs("thumbs", exist_ok=True)
+          os.makedirs("work", exist_ok=True)
+
+          idx_path = "thumbs/index.json"
+          idx = {}
+          if os.path.exists(idx_path):
+              with open(idx_path, encoding="utf-8") as f:
+                  idx = json.load(f)
+
+          raw = subprocess.run(
+              ["gh", "api", f"repos/{repo}/releases?per_page=30"],
+              capture_output=True, text=True, check=True
+          ).stdout
+          releases = json.loads(raw)
+
+          seen = set()
+          for rel in releases:
+              if rel.get("draft"):
+                  continue
+              for a in rel.get("assets", []):
+                  name = a["name"]
+                  if not name.lower().endswith(".zip"):
+                      continue
+                  seen.add(name)
+                  old = idx.get(name)
+                  if old and old.get("size") == a["size"]:
+                      continue
+
+                  subprocess.run(
+                      ["gh", "release", "download", rel["tag_name"], "--repo", repo,
+                       "--pattern", name, "--dir", "work", "--clobber"],
+                      check=True
+                  )
+                  path = os.path.join("work", name)
+
+                  found = None
+                  try:
+                      with zipfile.ZipFile(path) as z:
+                          cands = []
+                          for info in z.infolist():
+                              if info.is_dir():
+                                  continue
+                              stem, ext = os.path.splitext(os.path.basename(info.filename))
+                              if stem.lower() in STEMS and ext.lower() in EXTS and info.file_size <= LIMIT:
+                                  cands.append(info)
+                          cands.sort(key=lambda i: (i.filename.count("/"), i.filename))
+                          if cands:
+                              pick = cands[0]
+                              ext = os.path.splitext(pick.filename)[1].lower()
+                              fname = re.sub(r"[^A-Za-z0-9._-]", "_", name) + ext
+                              with z.open(pick) as src, open(os.path.join("thumbs", fname), "wb") as dst:
+                                  dst.write(src.read())
+                              found = fname
+                  except zipfile.BadZipFile:
+                      found = None
+
+                  idx[name] = {"file": found, "size": a["size"]}
+                  os.remove(path)
+
+          for name in list(idx):
+              if name not in seen:
+                  f = idx[name].get("file")
+                  if f and os.path.exists(os.path.join("thumbs", f)):
+                      os.remove(os.path.join("thumbs", f))
+                  del idx[name]
+
+          with open(idx_path, "w", encoding="utf-8") as f:
+              json.dump(idx, f, ensure_ascii=False, indent=2)
+          PY
+
+      - name: Commit thumbnails
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@users.noreply.github.com"
+          git add thumbs
+          if ! git diff --cached --quiet; then
+            git commit -m "thumbs"
+            git push
+          fi
