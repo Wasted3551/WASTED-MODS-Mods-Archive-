@@ -1,0 +1,12 @@
+The mod adds the Absolute Flash character and a few others.
+
+
+Abilities:
+
+F (Head) – Time dilation.
+H (Head) – Whole‑body vibration, allowing you to pass through objects.
+R (Forearm) – Lightning charge shot.
+H (Forearm) – Hand vibration, dealing damage to surrounding enemies.
+J (Forearm) – Visual vortex that repels and destroys objects.
+F (Torso) – Creation of clones.
+H (Torso) – Massive attack (barrage fire).

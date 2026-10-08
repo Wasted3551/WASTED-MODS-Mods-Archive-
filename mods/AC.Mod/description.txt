@@ -1,0 +1,7 @@
+The mod adds one assassin and their weapon.
+
+Features:
+
+The hidden blade is activated by pressing the H key if a hand is selected.
+The character can throw weapons (for example, throwing knives or darts) by pressing the R key when a hand is selected.
+The parkour mode is enabled and disabled via the context menu — in this mode, the character clings to buildings with their hands and feet, simulating climbing.

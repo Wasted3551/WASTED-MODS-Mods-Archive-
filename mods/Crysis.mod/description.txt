@@ -1,0 +1,8 @@
+THIS IS A MOD FOR THE CRYSIS GAME SERIES
+
+To use abilities, activate the head by pressing the F button,
+and you will see the mode selection menu.
+To change the mode, press A or D, then press F to close the menu,
+and press H on the head to apply the selected mode.
+
+Activate the upper body using the H button to start firing.
