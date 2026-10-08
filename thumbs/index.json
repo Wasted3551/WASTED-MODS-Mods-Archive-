@@ -11,7 +11,7 @@
   },
   "My.Hero.Playground.zip": {
     "file": "My.Hero.Playground.zip.png",
-    "size": 48377367,
+    "size": 48377366,
     "rule": 2
   },
   "Ninja.Turtles.Playground.zip": {
@@ -54,11 +54,6 @@
     "size": 54156136,
     "rule": 2
   },
-  "doflamingo.mod.zip": {
-    "file": "doflamingo.mod.zip.png",
-    "size": 12057231,
-    "rule": 2
-  },
   "gurren-lagann-mod.zip": {
     "file": "gurren-lagann-mod.zip.png",
     "size": 7935709,
@@ -72,11 +67,6 @@
   "jjk.mod.zip": {
     "file": "jjk.mod.zip.png",
     "size": 2100673,
-    "rule": 2
-  },
-  "jojolion.mod.zip": {
-    "file": "jojolion.mod.zip.png",
-    "size": 9139233,
     "rule": 2
   },
   "MBA.Steel.Ball.Run.zip": {
@@ -114,9 +104,9 @@
     "size": 31168678,
     "rule": 2
   },
-  "Zucchero.mod.zip": {
-    "file": "Zucchero.mod.zip.png",
-    "size": 7022066,
+  "AC.Mod.zip": {
+    "file": "AC.Mod.zip.png",
+    "size": 1560250,
     "rule": 2
   }
 }
