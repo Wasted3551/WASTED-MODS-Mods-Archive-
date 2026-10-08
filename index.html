@@ -230,6 +230,84 @@ footer a:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
   details.release summary{padding:16px}
 }
 @media (prefers-reduced-motion:reduce){.btn{transition:none}}
+.flink{color:inherit;text-decoration:none}
+.flink:hover{color:var(--glow);text-decoration:underline;text-underline-offset:3px}
+.flink:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+.back{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin:0 0 18px;
+  padding:6px 0;
+  color:var(--muted);
+  font-size:15px;
+  text-decoration:none;
+}
+.back::before{content:"\2039";font-size:24px;line-height:1;color:var(--glow)}
+.back:hover{color:var(--text)}
+.back:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
+.mod-title{
+  margin:0 0 22px;
+  font:700 clamp(24px,5vw,38px)/1.1 var(--display);
+  letter-spacing:-.02em;
+  word-break:break-word;
+}
+.mod-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) 290px;
+  grid-template-areas:"gallery side" "desc side";
+  gap:22px 24px;
+  align-items:start;
+}
+.gallery{grid-area:gallery;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:12px;display:grid;gap:12px;min-width:0}
+.desc{grid-area:desc;background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:20px 22px;white-space:pre-wrap;word-break:break-word;min-width:0}
+.desc.muted{color:var(--muted)}
+.shot-main{display:block;width:100%;aspect-ratio:16/9;background:#07050b;border-radius:10px;overflow:hidden}
+.shot-main img{display:block;width:100%;height:100%;object-fit:contain}
+.shots{display:flex;gap:8px;overflow-x:auto;padding-bottom:2px}
+.shots button{
+  flex:0 0 100px;
+  height:58px;
+  padding:0;
+  border:2px solid transparent;
+  border-radius:8px;
+  overflow:hidden;
+  background:#07050b;
+  cursor:pointer;
+  opacity:.65;
+}
+.shots button:hover{opacity:1}
+.shots button[aria-current="true"]{border-color:var(--violet);opacity:1}
+.shots button:focus-visible{outline:2px solid var(--glow);outline-offset:2px}
+.shots button img{display:block;width:100%;height:100%;object-fit:cover}
+.mod-side{
+  grid-area:side;
+  position:sticky;
+  top:20px;
+  display:grid;
+  gap:14px;
+  padding:18px;
+  background:var(--panel);
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+.side-thumb{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;border:1px solid var(--line-2);background:var(--panel-2)}
+div.side-thumb{display:grid;place-items:center;color:var(--glow);font:700 24px/1 var(--display)}
+.side-dl b{
+  display:block;
+  font:600 36px/1 var(--body);
+  font-variant-numeric:lining-nums tabular-nums;
+  font-feature-settings:"lnum" 1,"tnum" 1;
+  letter-spacing:-.03em;
+  margin-bottom:4px;
+}
+.side-dl span{color:var(--muted);font-size:14px}
+.side-meta{display:grid;gap:2px;color:var(--muted);font-size:13px}
+.mod-side .btn{display:block;width:100%}
+@media (max-width:760px){
+  .mod-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"gallery" "side" "desc"}
+  .mod-side{position:static}
+}
 </style>
 </head>
 <body>
@@ -246,6 +324,7 @@ footer a:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
     <p class="lead" id="lead"></p>
   </header>
 
+  <div id="home">
   <section class="stats">
     <div class="stat"><b id="s-downloads">–</b><span id="l-downloads"></span></div>
     <div class="stat"><b id="s-views">–</b><span id="l-views"></span></div>
@@ -259,6 +338,9 @@ footer a:focus-visible{outline:2px solid var(--glow);outline-offset:3px}
   <main id="list" aria-live="polite">
     <div class="skeleton"></div>
   </main>
+  </div>
+
+  <div id="detail" hidden></div>
 
   <footer>
     <a id="gh" target="_blank" rel="noopener"></a>
@@ -307,7 +389,12 @@ const I18N = {
     errHttpTitle: "Could not load files",
     errHttpText: "Check your connection and refresh the page.",
     filesIn: "Files",
-    github: "View on GitHub"
+    github: "View on GitHub",
+    back: "All mods",
+    sharePage: "Copy page link",
+    noDescription: "No description yet.",
+    modMissingTitle: "Mod not found",
+    modMissingText: "It may have been renamed or removed."
   },
   ru: {
     locale: "ru-RU",
@@ -335,7 +422,12 @@ const I18N = {
     errHttpTitle: "Не удалось загрузить файлы",
     errHttpText: "Проверь соединение и обнови страницу.",
     filesIn: "Файлов",
-    github: "Открыть на GitHub"
+    github: "Открыть на GitHub",
+    back: "Все моды",
+    sharePage: "Копировать ссылку на страницу",
+    noDescription: "Описания пока нет.",
+    modMissingTitle: "Мод не найден",
+    modMissingText: "Возможно, его переименовали или удалили."
   }
 };
 
@@ -343,7 +435,7 @@ const $ = id => document.getElementById(id);
 const SLUG = CONFIG.repo.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
 const NS = "dl-" + SLUG;
 
-const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: true, thumbs: {}, query: "" };
+const state = { status: "loading", error: null, releases: [], views: null, viewsFailed: true, thumbs: {}, mod: null, details: {}, query: "" };
 let lang = detectLang();
 
 function detectLang(){
@@ -415,6 +507,14 @@ async function copyText(text){
   }
 }
 
+function modKey(fileName){
+  return fileName.replace(/\.zip$/i, "");
+}
+
+function modHash(fileName){
+  return "#/mod/" + encodeURIComponent(modKey(fileName));
+}
+
 function buildIcon(a){
   const badge = el("div", "ext", extOf(a.name));
   const info = state.thumbs[a.name];
@@ -431,9 +531,15 @@ function buildIcon(a){
 function buildFile(a){
   const s = t();
   const li = el("li", "file");
-  li.append(buildIcon(a));
+  const icon = buildIcon(a);
+  icon.style.cursor = "pointer";
+  icon.addEventListener("click", () => { location.hash = modHash(a.name); });
+  li.append(icon);
 
-  const name = el("div", "fname", a.name);
+  const name = el("div", "fname");
+  const link = el("a", "flink", a.name);
+  link.href = modHash(a.name);
+  name.append(link);
   const meta = el("div", "fmeta");
   meta.append(el("span", "", fmtSize(a.size)));
   if (a.updated_at) meta.append(el("span", "", s.updated + " " + fmtDate(a.updated_at)));
@@ -595,12 +701,226 @@ function renderStatic(){
   });
 }
 
+function pickDesc(det){
+  const order = lang === "ru"
+    ? ["description.ru.txt", "description.txt", "description.en.txt"]
+    : ["description.en.txt", "description.txt", "description.ru.txt"];
+  for (const n of order) {
+    if (det.desc[n]) return det.desc[n];
+  }
+  return "";
+}
+
+async function loadDetail(key){
+  const det = state.details[key];
+  const base = "mods/" + encodeURIComponent(key) + "/";
+  const wanted = ["description.ru.txt", "description.en.txt", "description.txt"];
+  let names = null;
+  try {
+    const r = await fetch("https://api.github.com/repos/" + CONFIG.repo + "/contents/mods/" + encodeURIComponent(key), {
+      headers: { Accept: "application/vnd.github+json" }
+    });
+    if (r.ok) {
+      const list = await r.json();
+      if (Array.isArray(list)) names = list.filter(f => f.type === "file").map(f => f.name);
+    }
+  } catch (e) {}
+
+  const toFetch = names ? names.filter(n => wanted.includes(n.toLowerCase())) : wanted;
+  const desc = {};
+  await Promise.all(toFetch.map(async n => {
+    try {
+      const r = await fetch(base + encodeURIComponent(n), { cache: "no-cache" });
+      if (r.ok) desc[n.toLowerCase()] = (await r.text()).trim();
+    } catch (e) {}
+  }));
+
+  det.desc = desc;
+  det.shots = names
+    ? names
+        .filter(n => /\.(png|jpe?g|webp|gif)$/i.test(n))
+        .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+        .map(n => base + encodeURIComponent(n))
+    : [];
+  det.status = "ok";
+  if (state.mod === key) renderDetail();
+}
+
+function buildGallery(shots){
+  const wrap = el("section", "gallery");
+  const main = el("a", "shot-main");
+  main.target = "_blank";
+  main.rel = "noopener";
+  const big = el("img");
+  big.alt = "";
+  main.append(big);
+
+  const strip = el("div", "shots");
+  const btns = [];
+  function show(i){
+    big.src = shots[i];
+    main.href = shots[i];
+    btns.forEach((b, j) => b.setAttribute("aria-current", String(i === j)));
+  }
+  shots.forEach((src, i) => {
+    const b = el("button");
+    b.type = "button";
+    b.setAttribute("aria-label", String(i + 1));
+    const im = el("img");
+    im.src = src;
+    im.alt = "";
+    im.loading = "lazy";
+    b.append(im);
+    b.addEventListener("click", () => show(i));
+    btns.push(b);
+    strip.append(b);
+  });
+  show(0);
+
+  wrap.append(main);
+  if (shots.length > 1) wrap.append(strip);
+  return wrap;
+}
+
+function buildSideThumb(a){
+  const badge = el("div", "side-thumb", extOf(a.name));
+  const info = state.thumbs[a.name];
+  if (!info || !info.file) return badge;
+  const img = el("img", "side-thumb");
+  img.alt = "";
+  img.src = "thumbs/" + encodeURIComponent(info.file);
+  img.addEventListener("error", () => img.replaceWith(badge));
+  return img;
+}
+
+function buildSide(a){
+  const s = t();
+  const side = el("aside", "mod-side");
+  side.append(buildSideThumb(a));
+
+  const dl = el("div", "side-dl");
+  dl.append(el("b", "", nf(a.download_count)), el("span", "", s.downloads));
+
+  const meta = el("div", "side-meta");
+  meta.append(el("span", "", fmtSize(a.size)));
+  if (a.updated_at) meta.append(el("span", "", s.updated + " " + fmtDate(a.updated_at)));
+
+  const btn = el("a", "btn", s.download);
+  btn.href = a.browser_download_url;
+  btn.rel = "noopener";
+  btn.addEventListener("click", () => {
+    btn.textContent = t().downloading;
+    btn.classList.add("done");
+    setTimeout(() => {
+      btn.textContent = t().download;
+      btn.classList.remove("done");
+    }, 2500);
+  });
+
+  const share = el("button", "btn ghost", s.sharePage);
+  share.type = "button";
+  share.addEventListener("click", async () => {
+    const ok = await copyText(location.href);
+    if (!ok) return;
+    share.textContent = t().copied;
+    share.classList.add("done");
+    setTimeout(() => {
+      share.textContent = t().sharePage;
+      share.classList.remove("done");
+    }, 1800);
+  });
+
+  side.append(dl, meta, btn, share);
+  return side;
+}
+
+function renderDetail(){
+  const s = t();
+  const box = $("detail");
+  box.replaceChildren();
+
+  const back = el("a", "back", s.back);
+  back.href = "#/";
+  box.append(back);
+
+  if (state.status === "loading") {
+    box.append(el("div", "skeleton"));
+    return;
+  }
+  if (state.status !== "ok") {
+    box.append(stateBox(s.errHttpTitle, s.errHttpText));
+    return;
+  }
+
+  let asset = null;
+  state.releases.forEach(r => (r.assets || []).forEach(a => {
+    if (!asset && modKey(a.name) === state.mod) asset = a;
+  }));
+  if (!asset) {
+    box.append(stateBox(s.modMissingTitle, s.modMissingText));
+    return;
+  }
+
+  document.title = state.mod + " - " + CONFIG.name;
+
+  let det = state.details[state.mod];
+  if (!det) {
+    det = { status: "loading", shots: [], desc: {} };
+    state.details[state.mod] = det;
+    loadDetail(state.mod);
+  }
+
+  box.append(el("h2", "mod-title", state.mod));
+  const grid = el("div", "mod-grid");
+
+  if (det.status === "loading") {
+    const sk = el("div", "skeleton");
+    sk.style.gridArea = "gallery";
+    grid.append(sk);
+  } else {
+    const hasShots = det.shots.length > 0;
+    const text = pickDesc(det);
+    if (hasShots) grid.append(buildGallery(det.shots));
+    if (text || !hasShots) {
+      const desc = el("section", text ? "desc" : "desc muted");
+      desc.textContent = text || s.noDescription;
+      if (!hasShots) desc.style.gridArea = "gallery";
+      grid.append(desc);
+    }
+  }
+
+  grid.append(buildSide(asset));
+  box.append(grid);
+}
+
 function render(){
   renderStatic();
-  renderStats();
-  renderTools();
-  renderList();
+  const inDetail = state.mod !== null;
+  $("home").hidden = inDetail;
+  $("detail").hidden = !inDetail;
+  $("lead").hidden = inDetail;
+  if (inDetail) {
+    renderDetail();
+  } else {
+    renderStats();
+    renderTools();
+    renderList();
+  }
 }
+
+function route(){
+  const m = location.hash.match(/^#\/mod\/(.+)$/);
+  let key = null;
+  if (m) {
+    try { key = decodeURIComponent(m[1]); } catch (e) { key = m[1]; }
+  }
+  const changed = key !== state.mod;
+  state.mod = key;
+  render();
+  if (changed) window.scrollTo(0, 0);
+}
+
+window.addEventListener("hashchange", route);
 
 document.querySelectorAll(".lang button").forEach(b => {
   b.addEventListener("click", () => {
@@ -677,7 +997,7 @@ if (CONFIG.goatcounter) {
   document.head.append(gc);
 }
 
-render();
+route();
 async function loadThumbs(){
   try {
     const r = await fetch("thumbs/index.json", { cache: "no-cache" });
@@ -685,7 +1005,7 @@ async function loadThumbs(){
     const d = await r.json();
     if (d && typeof d === "object") {
       state.thumbs = d;
-      if (state.status === "ok") renderList();
+      if (state.status === "ok") render();
     }
   } catch (e) {}
 }
